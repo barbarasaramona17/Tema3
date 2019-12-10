@@ -4,8 +4,8 @@ const Sequelize = require('sequelize')
 
 const mysql = require('mysql2/promise')
 
-const DB_USERNAME = 'root'
-const DB_PASSWORD = 'welcome12#'
+const DB_USERNAME = 'barbarasaramona'
+const DB_PASSWORD = 'ramona'
 
 let conn
 
@@ -72,12 +72,34 @@ app.get('/students', async (req, res) => {
 })
 
 app.post('/students', async (req, res) => {
-    try{
-        // TODO
+    try{let body= req.body;
+        if(body.age<0){
+            res.status(400).json({"message":"age should be a positive number"})
+        }
+        else if(Object.keys(body).length===0){
+            res.status(400).json({"message":"body is missing"})
+        }
+       else
+        if(!body.hasOwnProperty('name')||!body.hasOwnProperty('age')||!body.hasOwnProperty('address'))
+        {
+            res.status(400).json({"message":"malformed request"})
+        }
+       else
+       {
+            let student = new Student({
+                name : body.name,
+                address : body.address,
+                age : parseInt(body.age)
+            })
+            await student.save()
+            
+            res.status(201).json({"message" : 'created'})
+           
+           }
     }
     catch(err){
         console.warn(err.stack)
-        res.status(500).json({message : 'server error'})        
+        res.status(500).json({"message" : "server error"})        
     }
 })
 
